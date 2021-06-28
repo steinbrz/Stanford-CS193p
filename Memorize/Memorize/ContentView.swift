@@ -29,7 +29,7 @@ struct ContentView: View {
     }
     
     
-}Ω
+}
 
 
 struct CardView: View {
