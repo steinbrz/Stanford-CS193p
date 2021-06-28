@@ -13,23 +13,50 @@ struct ContentView: View {
     
     
     var body: some View {
-        ScrollView {
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]) {
-                ForEach(viewModel.cards) { card in
-                    CardView(card: card)
-                        .aspectRatio(2/3, contentMode: .fit)
-                        .onTapGesture {
-                            viewModel.choose(card)
-                        }
+        VStack {
+            HStack {
+                Text(viewModel.themeName)
+                    .bold()
+                    .font(.largeTitle)
+                    .foregroundColor(.blue)
+                Spacer()
+                Text(viewModel.score)
+                    .bold()
+                    .font(.largeTitle)
+                
+            }
+            ScrollView {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]) {
+                    ForEach(viewModel.cards) { card in
+                        CardView(card: card)
+                            .aspectRatio(2/3, contentMode: .fit)
+                            .onTapGesture {
+                                viewModel.choose(card)
+                            }
+                    }
                 }
             }
+            .foregroundColor(Color.red)
+            .padding(.horizontal)
+            HStack {
+                Spacer()
+                newGameButton
+                Spacer()
+            }
         }
-        .foregroundColor(Color.red)
-        .padding(.horizontal)
+    }
+    
+    var newGameButton: some View {
+        Button{
+            viewModel.newGame()
+        } label: {
+            Image(systemName: "plus.circle")
+                .font(.largeTitle)
+        }
     }
     
     
-}Ω
+}
 
 
 struct CardView: View {
