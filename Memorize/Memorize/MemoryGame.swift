@@ -10,29 +10,28 @@ import Foundation
 struct MemoryGame<CardContent> where CardContent: Equatable{
     private(set) var cards: Array<Card>
     
-    private var indexOfTheOneAndOnlyFaceUpCard: Int? // Initialized to Optional<Int>.none
+    private var indexOfTheOneAndOnlyFaceUpCard: Int? {
+        get { cards.indices.filter({cards[$0].isFaceUp}).oneAndOnly } // oneAndOnly defined in extension at bottom of this file
+        set { cards.indices.forEach { cards[$0].isFaceUp = (newValue == $0) } }
+    }
     
     
     
-    mutating func choose(card: Card){ // Need mutating keyword for function that will change struct
+    mutating func choose(_ card: Card){ // Need mutating keyword for function that will change struct
         
         if let chosenIndex = cards.firstIndex(where: { $0.id == card.id }),
            !cards[chosenIndex].isFaceUp,
            !cards[chosenIndex].isMatched
         {
-            if let potentialMatchIndex = indexOfTheOneAndOnlyFaceUpCard {
+            if let potentialMatchIndex = indexOfTheOneAndOnlyFaceUpCard { // Get the index of the one and only face up card
                 if cards[chosenIndex].content == cards[potentialMatchIndex].content {
                     cards[chosenIndex].isMatched = true
                     cards[potentialMatchIndex].isMatched = true
                 }
-                indexOfTheOneAndOnlyFaceUpCard = nil
+                cards[chosenIndex].isFaceUp = true // Currently selected card must be turned face up
             } else {
-                for index in cards.indices {
-                    cards[index].isFaceUp = false
-                }
                 indexOfTheOneAndOnlyFaceUpCard = chosenIndex
             }
-            cards[chosenIndex].isFaceUp.toggle()
         }
         
         print("\(cards)")
@@ -48,7 +47,7 @@ struct MemoryGame<CardContent> where CardContent: Equatable{
     }
     
     init(numberOfPairsOfCards: Int, cardContentFactory: (Int) -> CardContent) {
-        cards = Array<Card>()
+        cards = []
         for pairIndex in 0..<numberOfPairsOfCards {
             let content = cardContentFactory(pairIndex)
             cards.append(Card(content: content, id: pairIndex*2))
@@ -57,11 +56,22 @@ struct MemoryGame<CardContent> where CardContent: Equatable{
     }
     
     struct Card: Identifiable{
-        var isFaceUp: Bool = false
-        var isMatched: Bool = false
-        var content: CardContent
-        var id: Int
+        var isFaceUp = true
+        var isMatched = false
+        let content: CardContent
+        let id: Int
         
+    }
+}
+
+extension Array {
+    // if you add a var as an extension, it needs to be computed. Not stored in memory
+    var oneAndOnly: Element? {
+        if count == 1 {
+            return self.first
+        } else {
+            return nil
+        }
     }
 }
 

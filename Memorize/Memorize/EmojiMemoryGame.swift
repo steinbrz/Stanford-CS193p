@@ -10,13 +10,15 @@ import SwiftUI
 
 
 class EmojiMemoryGame: ObservableObject {
-    static let emojis = ["🚲", "🚂", "🚁", "🚜", "✈️", "🚀", "🚗", "🚢", "⛵️", "🚄", "🚎", "🚃", "🚔", "🚠", "🚑", "🛺", "🏍", "🚐", "🛵", "🏎", "🛴"] // lecture code has 24
+    typealias Card = MemoryGame<String>.Card
     
-    @Published private var model: MemoryGame<String> = createMemoryGame() // Cannot call function before init, circumvented by using static func
+    private static let emojis = ["🚲", "🚂", "🚁", "🚜", "✈️", "🚀", "🚗", "🚢", "⛵️", "🚄", "🚎", "🚃", "🚔", "🚠", "🚑", "🛺", "🏍", "🚐", "🛵", "🏎", "🛴"] // lecture code has 24
+    
+    @Published private var model = createMemoryGame() // Cannot call function before init, circumvented by using static func
     // This @Published behavior works because MemoryGame<CardContent> is a struct and Swift can notice changes in structs
     
     
-    static func createMemoryGame() -> MemoryGame<String> { // Can
+    private static func createMemoryGame() -> MemoryGame<String> { // Can
         MemoryGame<String>(numberOfPairsOfCards: 3) { pairIndex in
             emojis[pairIndex]
         }
@@ -26,14 +28,14 @@ class EmojiMemoryGame: ObservableObject {
     
     // MARK: - Access to Model
     
-    var cards: Array<MemoryGame<String>.Card>{ // Computed variable
+    var cards: Array<Card>{ // Computed variable
         return model.cards
     }
     
     // MARK: - Intent(s)
     
-    func choose(_ card: MemoryGame<String>.Card){
-        return model.choose(card: card)
+    func choose(_ card: Card){
+        return model.choose(card)
     }
     
     
