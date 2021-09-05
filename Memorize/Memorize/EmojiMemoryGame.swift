@@ -18,17 +18,16 @@ class EmojiMemoryGame: ObservableObject {
     // This @Published behavior works because MemoryGame<CardContent> is a struct and Swift can notice changes in structs
     
     
-    private static func createMemoryGame() -> MemoryGame<String> { // Can
-        MemoryGame<String>(numberOfPairsOfCards: 3) { pairIndex in
+    private static func createMemoryGame() -> MemoryGame<String> {
+        MemoryGame<String>(numberOfPairsOfCards: 6) { pairIndex in
             emojis[pairIndex]
         }
-        
     }
 
     
     // MARK: - Access to Model
     
-    var cards: Array<Card>{ // Computed variable
+    var cards: Array<Card> {
         return model.cards
     }
     

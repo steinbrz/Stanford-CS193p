@@ -13,18 +13,20 @@ struct EmojiMemoryGameView : View {
     
     
     var body: some View {
-        ScrollView {
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))]) {
-                ForEach(game.cards) { card in
-                    CardView(card: card)
-                        .aspectRatio(2/3, contentMode: .fit)
-                        .onTapGesture {
-                            game.choose(card)
-                        }
-                }
+        
+        AspectVGrid(items: game.cards, aspectRatio: 2/3) { card in
+            if card.isMatched && !card.isFaceUp {
+                Rectangle().opacity(0)
+            } else {
+                CardView(card: card)
+                    .padding(4)
+                    .aspectRatio(2/3, contentMode: .fit)
+                    .onTapGesture {
+                        game.choose(card)
+                    }
             }
         }
-        .foregroundColor(Color.red)
+        .foregroundColor(.red)
         .padding(.horizontal)
     }
     
@@ -44,6 +46,9 @@ struct CardView: View {
                     if card.isFaceUp {
                         shape.fill().foregroundColor(.white)
                         shape.strokeBorder(lineWidth: DrawingConstants.lineWidth)
+                        Pie(startAngle: Angle(degrees: 0 - 90), endAngle: Angle(degrees: 110 - 90))
+                            .padding(DrawingConstants.circlePadding)
+                            .opacity(DrawingConstants.circleOpacity)
                         Text(card.content).font(font(in: geometry.size))
                     } else if card.isMatched {
                         shape.opacity(0) // Makes it transparent
@@ -59,9 +64,11 @@ struct CardView: View {
     }
     
     private struct DrawingConstants {
-        static let cornerRadius: CGFloat = 20
+        static let cornerRadius: CGFloat = 10
         static let lineWidth: CGFloat = 3
-        static let fontScale: CGFloat = 0.8
+        static let fontScale: CGFloat = 0.70
+        static let circlePadding: CGFloat = 5
+        static let circleOpacity: Double = 0.5
         
     }
 }
@@ -74,10 +81,14 @@ struct CardView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         let game = EmojiMemoryGame()
-        Group {
-            EmojiMemoryGameView(game: game)
-            EmojiMemoryGameView(game: game)
-                .preferredColorScheme(.dark)
-        }
+        game.choose(game.cards.first!)
+//        Group {
+//            EmojiMemoryGameView(game: game)
+//                .preferredColorScheme(.light)
+//            EmojiMemoryGameView(game: game)
+//                .preferredColorScheme(.dark)
+//        }
+        return EmojiMemoryGameView(game: game)
+            .preferredColorScheme(.dark)
     }
 }
